@@ -32,6 +32,7 @@ export async function POST(req: Request) {
         // Upload to Vercel Blob
         const blob = await put(filename, file, {
             access: 'public',
+            contentType: file.type // Explicitly set MIME type
         });
 
         console.log("Blob uploaded:", blob.url);
