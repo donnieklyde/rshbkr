@@ -8,14 +8,24 @@ export default async function Home() {
 
   return (
     <div className="container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', paddingTop: '4rem' }}>
+      import NotificationBell from "./components/NotificationBell"
+
+      // ... imports remain ...
+
+      // Inside component
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
         <h1 style={{ fontWeight: 800, letterSpacing: '-0.05em' }}>RSHBKR</h1>
-        <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
           {session ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <span style={{ color: '#888' }}>@{session.user?.name}</span>
-              <SignOut />
-            </div>
+            <>
+              <NotificationBell />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <Link href={`/profile/${(session.user as any)?.username}`} style={{ color: '#888' }}>
+                  @{session.user?.name}
+                </Link>
+                <SignOut />
+              </div>
+            </>
           ) : (
             <SignIn />
           )}
@@ -74,7 +84,9 @@ async function TrackList() {
             <div className="glass-panel" style={{ cursor: 'pointer', transition: 'border-color 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 600 }}>{track.title}</h3>
-                <p style={{ color: '#888', fontSize: '0.9rem' }}>@{track.artist.username || track.artist.name}</p>
+                <Link href={`/profile/${track.artist.username}`} onClick={(e) => e.stopPropagation()} style={{ color: '#888', fontSize: '0.9rem' }}>
+                  @{track.artist.username || track.artist.name}
+                </Link>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{avg}</span>

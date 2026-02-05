@@ -29,6 +29,16 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Track ID required" }, { status: 400 })
         }
 
+        // Fetch track to get owner
+        const track = await prisma.track.findUnique({
+            where: { id: trackId },
+            select: { title: true, artistId: true }
+        })
+
+        if (!track) {
+            return NextResponse.json({ error: "Track not found" }, { status: 404 })
+        }
+
         const rating = await prisma.rating.upsert({
             where: {
                 userId_trackId: {
@@ -49,6 +59,18 @@ export async function POST(req: Request) {
                 summary
             }
         })
+
+        // Create Notification (only if not self-rating)
+        if (track.artistId !== session.user.id) {
+            await prisma.notification.create({
+                data: {
+                    userId: track.artistId,
+                    content: `@${session.user.name || 'someone'} rated "${track.title}"`,
+                    link: `/track/${trackId}?highlight=${rating.id}`,
+                    type: 'rating'
+                }
+            })
+        }
 
         return NextResponse.json({ success: true, rating })
     } catch (error) {

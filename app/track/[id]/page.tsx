@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import RatingForm from "@/app/components/RatingForm"
 import RatingDisplay from "@/app/components/RatingDisplay"
+import Link from "next/link"
 
 export default async function TrackPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -29,7 +30,9 @@ export default async function TrackPage({ params }: { params: Promise<{ id: stri
 
             <div className="glass-panel" style={{ marginBottom: '2rem' }}>
                 <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>{track.title}</h1>
-                <p style={{ color: '#888', marginBottom: '2rem' }}>by @{track.artist.username || track.artist.name}</p>
+                <Link href={`/profile/${track.artist.username}`} style={{ color: '#888', marginBottom: '2rem', display: 'inline-block' }}>
+                    by @{track.artist.username || track.artist.name}
+                </Link>
 
                 {track.description && (
                     <div style={{ marginBottom: '2rem', fontStyle: 'italic', borderLeft: '2px solid #333', paddingLeft: '1rem', color: '#ccc' }}>
@@ -56,7 +59,9 @@ export default async function TrackPage({ params }: { params: Promise<{ id: stri
                         {track.ratings.map(r => (
                             <div key={r.id} style={{ background: '#111', padding: '1rem', borderRadius: '8px', border: '1px solid #222' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                    <span style={{ fontWeight: 'bold' }}>@{r.user.username || 'user'}</span>
+                                    <Link href={`/profile/${r.user.username}`} style={{ fontWeight: 'bold' }}>
+                                        @{r.user.username || 'user'}
+                                    </Link>
                                     <span style={{ color: '#888', fontSize: '0.8rem' }}>{new Date(r.createdAt).toLocaleDateString()}</span>
                                 </div>
                                 <div style={{ fontSize: '0.9rem', color: '#ccc', marginBottom: '0.5rem' }}>
