@@ -1,65 +1,89 @@
-import Image from "next/image";
+import { auth } from "@/auth"
+import { SignIn, SignOut } from "./components/AuthButtons"
+import { prisma } from "@/lib/prisma"
+import Link from "next/link"
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth()
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', paddingTop: '4rem' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
+        <h1 style={{ fontWeight: 800, letterSpacing: '-0.05em' }}>RSHBKR</h1>
+        <div>
+          {session ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <span style={{ color: '#888' }}>@{session.user?.name}</span>
+              <SignOut />
+            </div>
+          ) : (
+            <SignIn />
+          )}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+      </header>
+
+      <main>
+        {!session ? (
+          <section style={{ textAlign: 'center', marginTop: '4rem' }}>
+            <h2 style={{ fontSize: '3rem', lineHeight: 1.1, marginBottom: '2rem', background: 'linear-gradient(to bottom, #fff, #666)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              Music is a shapeshifter.
+            </h2>
+            <p style={{ color: '#888', marginBottom: '2rem', fontSize: '1.2rem' }}>
+              Rate audio on feeling, intent, and aftertaste.
+            </p>
+          </section>
+        ) : (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>Feed</h2>
+              <a href="/upload" className="btn-primary" style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>+ Upload</a>
+            </div>
+
+            <TrackList />
+          </div>
+        )}
       </main>
     </div>
   );
+}
+
+async function TrackList() {
+  const tracks = await prisma.track.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { artist: true, ratings: true }
+  })
+
+  if (tracks.length === 0) {
+    return (
+      <div className="glass-panel" style={{ textAlign: 'center', padding: '3rem', color: '#444' }}>
+        <p>No tracks yet. Be the first.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: '1rem' }}>
+      {tracks.map(track => {
+        // Calculate average rating
+        const avg = track.ratings.length > 0
+          ? (track.ratings.reduce((acc, r) => acc + ((r.feelingStart || 0) + (r.ideaIntent || 0) + (r.soundTexture || 0) + (r.melodyHarmony || 0) + (r.rhythmGroove || 0) + (r.lyrics || 0) + (r.originality || 0) + (r.commitment || 0) + (r.context || 0) + (r.aftertaste || 0)) / 10, 0) / track.ratings.length).toFixed(1)
+          : '-';
+
+        return (
+          <Link key={track.id} href={`/track/${track.id}`}>
+            <div className="glass-panel" style={{ cursor: 'pointer', transition: 'border-color 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 600 }}>{track.title}</h3>
+                <p style={{ color: '#888', fontSize: '0.9rem' }}>@{track.artist.username || track.artist.name}</p>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{avg}</span>
+                <span style={{ fontSize: '0.8rem', color: '#666', display: 'block' }}>score</span>
+              </div>
+            </div>
+          </Link>
+        )
+      })}
+    </div>
+  )
 }
