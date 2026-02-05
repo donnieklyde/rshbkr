@@ -39,7 +39,7 @@ export default async function Home() {
               music<br />for not giving fucks<br />in the ass
             </h2>
             <p style={{ color: '#888', marginBottom: '2rem', fontSize: '1.2rem' }}>
-              alles was sie sagen kann und wird gegen sie verwendet
+              alles was sie sagen kann und wird gegen sie verwendet.
             </p>
           </section>
         ) : (
