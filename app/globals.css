@@ -1,20 +1,20 @@
 :root {
   --background: #050505;
   --foreground: #ffffff;
-  
+
   --accent: #f0f0f0;
   --accent-dim: #888888;
   --border: #333333;
-  
-  --font-main: var(--font-geist-sans), sans-serif;
+
+  --font-main: "Bahnschrift", sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
-  
+
   --rating-feeling: #ff4d4d;
   --rating-idea: #4d94ff;
   --rating-sound: #b366ff;
   --rating-melody: #ffd700;
   --rating-rhythm: #00ff99;
-  
+
   --glass: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
 }
@@ -25,13 +25,15 @@
   margin: 0;
 }
 
-html, body {
+html,
+body {
   max-width: 100vw;
   overflow-x: hidden;
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-main);
   -webkit-font-smoothing: antialiased;
+  font-weight: bold;
 }
 
 a {

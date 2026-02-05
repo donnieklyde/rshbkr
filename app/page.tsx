@@ -26,7 +26,7 @@ export default async function Home() {
         {!session ? (
           <section style={{ textAlign: 'center', marginTop: '4rem' }}>
             <h2 style={{ fontSize: '3rem', lineHeight: 1.1, marginBottom: '2rem', background: 'linear-gradient(to bottom, #fff, #666)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Music is a shapeshifter.
+              music<br />for fucks<br />not in the ass
             </h2>
             <p style={{ color: '#888', marginBottom: '2rem', fontSize: '1.2rem' }}>
               Rate audio on feeling, intent, and aftertaste.
