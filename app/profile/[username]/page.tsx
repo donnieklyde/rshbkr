@@ -1,6 +1,25 @@
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
-import Link from "next/link"
+import Link from 'next/link'
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
+    const { username } = await params
+    const user = await prisma.user.findUnique({ where: { username } })
+
+    if (!user) return { title: 'Not Found' }
+
+    return {
+        title: `${user.username} | RSHBKR`,
+        description: `Check out tracks and critiques by ${user.username} on RSHBKR.`,
+        openGraph: {
+            title: `${user.username} | RSHBKR`,
+            description: `Check out tracks and critiques by ${user.username}`,
+            type: 'profile',
+            username: user.username || undefined,
+        }
+    }
+}
 
 export default async function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
     const { username } = await params
