@@ -29,7 +29,7 @@ export default async function Home() {
               music<br />for not giving fucks<br />in the ass
             </h2>
             <p style={{ color: '#888', marginBottom: '2rem', fontSize: '1.2rem' }}>
-              we want to know if you give a fuck about music
+              alles was sie sagen kann und wird gegen sie verwendet
             </p>
           </section>
         ) : (
