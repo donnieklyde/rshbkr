@@ -9,13 +9,19 @@ export async function POST(req: Request) {
     }
 
     try {
-        const { username } = await req.json()
+        let { username } = await req.json()
 
-        if (!username || username.length < 3) {
-            return NextResponse.json({ error: "Username must be at least 3 characters" }, { status: 400 })
+        // Enforce lowercase and remove whitespace
+        username = username?.toLowerCase().trim()
+
+        // Strict 3-20 chars, alphanumeric + underscore only
+        const usernameRegex = /^[a-z0-9_]{3,20}$/
+
+        if (!username || !usernameRegex.test(username)) {
+            return NextResponse.json({ error: "Username must be 3-20 lowercase alphanumeric characters" }, { status: 400 })
         }
 
-        // Check if username exists
+        // Check if username exists (now strictly lowercase)
         const existing = await prisma.user.findUnique({
             where: { username }
         })
