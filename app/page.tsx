@@ -76,20 +76,20 @@ async function TrackList() {
           : '-';
 
         return (
-          <Link key={track.id} href={`/track/${track.id}`}>
-            <div className="glass-panel" style={{ cursor: 'pointer', transition: 'border-color 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 600 }}>{track.title}</h3>
-                <Link href={`/profile/${track.artist.username}`} onClick={(e) => e.stopPropagation()} style={{ color: '#888', fontSize: '0.9rem' }}>
-                  @{track.artist.username || track.artist.name}
-                </Link>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{avg}</span>
-                <span style={{ fontSize: '0.8rem', color: '#666', display: 'block' }}>score</span>
-              </div>
+          <div key={track.id} className="glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <Link href={`/track/${track.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '0.2rem' }}>{track.title}</h3>
+              </Link>
+              <Link href={`/profile/${track.artist.username}`} style={{ color: '#888', fontSize: '0.9rem' }}>
+                @{track.artist.username || track.artist.name}
+              </Link>
             </div>
-          </Link>
+            <div style={{ textAlign: 'right' }}>
+              <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{avg}</span>
+              <span style={{ fontSize: '0.8rem', color: '#666', display: 'block' }}>score</span>
+            </div>
+          </div>
         )
       })}
     </div>
