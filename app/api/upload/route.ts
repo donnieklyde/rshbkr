@@ -26,10 +26,15 @@ export async function POST(req: Request) {
 
         const filename = `${uuidv4()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "")}`
 
+        console.log("Starting upload for:", filename);
+        console.log("Token present:", !!process.env.BLOB_READ_WRITE_TOKEN);
+
         // Upload to Vercel Blob
         const blob = await put(filename, file, {
             access: 'public',
         });
+
+        console.log("Blob uploaded:", blob.url);
 
         // Create Track in DB
         const track = await prisma.track.create({
@@ -41,9 +46,12 @@ export async function POST(req: Request) {
             }
         })
 
+        console.log("Track created in DB:", track.id);
+
         return NextResponse.json({ success: true, track })
-    } catch (error) {
-        console.error("Upload Error:", error)
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
+    } catch (error: any) {
+        console.error("Upload Error Details:", error);
+        console.error("Error received:", error.message);
+        return NextResponse.json({ error: "Internal Server Error: " + error.message }, { status: 500 })
     }
 }
