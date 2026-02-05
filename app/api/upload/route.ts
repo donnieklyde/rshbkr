@@ -11,7 +11,7 @@ export async function POST(request: Request): Promise<NextResponse> {
             request,
             onBeforeGenerateToken: async (pathname) => {
                 const session = await auth();
-                if (!session) {
+                if (!session || !session.user) {
                     throw new Error('Unauthorized');
                 }
 
