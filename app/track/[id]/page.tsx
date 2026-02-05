@@ -4,6 +4,33 @@ import { notFound } from "next/navigation"
 import RatingForm from "@/app/components/RatingForm"
 import RatingDisplay from "@/app/components/RatingDisplay"
 import Link from "next/link"
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params
+    const track = await prisma.track.findUnique({
+        where: { id },
+        include: { artist: true }
+    })
+
+    if (!track) {
+        return {
+            title: 'Not Found',
+        }
+    }
+
+    return {
+        title: track.title,
+        description: track.description || `Listen to ${track.title} by ${track.artist.username || track.artist.name} on RSHBKR.`,
+        openGraph: {
+            title: `${track.title} | RSHBKR`,
+            description: track.description || `Listen to ${track.title} by ${track.artist.username || track.artist.name}`,
+            type: 'music.song',
+            audio: track.fileUrl,
+            images: ['/og-image.jpg'], // Ideally dynamic, but static for now
+        },
+    }
+}
 
 export default async function TrackPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -24,8 +51,32 @@ export default async function TrackPage({ params }: { params: Promise<{ id: stri
 
     const userRating = session ? track.ratings.find(r => r.userId === session.user?.id) : null;
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'MusicRecording',
+        name: track.title,
+        url: `https://rshbkr.com/track/${track.id}`,
+        description: track.description,
+        byArtist: {
+            '@type': 'MusicGroup',
+            name: track.artist.username || track.artist.name,
+            url: `https://rshbkr.com/profile/${track.artist.username}`
+        },
+        audio: track.fileUrl,
+        datePublished: track.createdAt.toISOString(),
+        aggregateRating: track.ratings.length > 0 ? {
+            '@type': 'AggregateRating',
+            ratingValue: (track.ratings.reduce((acc, r) => acc + ((r.feelingStart || 0) + (r.ideaIntent || 0) + (r.soundTexture || 0) + (r.melodyHarmony || 0) + (r.rhythmGroove || 0) + (r.lyrics || 0) + (r.originality || 0) + (r.commitment || 0) + (r.context || 0) + (r.aftertaste || 0)) / 10, 0) / track.ratings.length).toFixed(1),
+            reviewCount: track.ratings.length
+        } : undefined
+    }
+
     return (
         <div className="container" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <a href="/" style={{ color: '#888', marginBottom: '2rem', display: 'inline-block' }}>← Back to Feed</a>
 
             <div className="glass-panel" style={{ marginBottom: '2rem' }}>
