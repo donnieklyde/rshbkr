@@ -2,17 +2,13 @@ import { auth } from "@/auth"
 import { SignIn, SignOut } from "./components/AuthButtons"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
+import NotificationBell from "./components/NotificationBell"
 
 export default async function Home() {
   const session = await auth()
 
   return (
     <div className="container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', paddingTop: '4rem' }}>
-      import NotificationBell from "./components/NotificationBell"
-
-      // ... imports remain ...
-
-      // Inside component
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
         <h1 style={{ fontWeight: 800, letterSpacing: '-0.05em' }}>RSHBKR</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
