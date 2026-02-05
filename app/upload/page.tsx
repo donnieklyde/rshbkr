@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { upload } from '@vercel/blob/client';
 
 export default function UploadPage() {
     const [file, setFile] = useState<File | null>(null);
@@ -24,27 +25,34 @@ export default function UploadPage() {
         setUploading(true);
         setError('');
 
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('title', title);
-        formData.append('description', description);
-
         try {
-            const res = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
+            // 1. Upload file to Vercel Blob (Client Side)
+            const newBlob = await upload(file.name, file, {
+                access: 'public',
+                handleUploadUrl: '/api/upload',
             });
 
-            const data = await res.json();
+            // 2. Save metadata to DB
+            const res = await fetch('/api/tracks/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title,
+                    description,
+                    url: newBlob.url
+                }),
+            });
 
             if (!res.ok) {
-                throw new Error(data.error || 'Upload failed');
+                const data = await res.json();
+                throw new Error(data.error || 'Failed to save track info');
             }
 
             router.push('/');
             router.refresh();
         } catch (err: any) {
-            setError(err.message);
+            console.error(err);
+            setError(err.message || 'Upload failed');
         } finally {
             setUploading(false);
         }
