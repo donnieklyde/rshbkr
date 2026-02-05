@@ -20,6 +20,7 @@ model User {
   tracks        Track[]
   ratings       Rating[]
   comments      Comment[]
+  notifications Notification[]
   
   isOnboarded   Boolean   @default(false)
   createdAt     DateTime  @default(now())
@@ -111,5 +112,18 @@ model Comment {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   track     Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
   
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  content   String
+  link      String?
+  isRead    Boolean  @default(false)
+  type      String   @default("info") // "rating", "system", etc.
+
   createdAt DateTime @default(now())
 }
