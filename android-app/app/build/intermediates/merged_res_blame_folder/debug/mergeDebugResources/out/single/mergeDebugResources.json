@@ -1,30 +1,22 @@
 [
     {
-        "merged": "C:\\Users\\peppe\\.gradle\\daemon\\9.0-milestone-1\\com.rshbkr.app-debug-52:\\xml_backup_rules.xml.flat",
-        "source": "C:\\Users\\peppe\\.gradle\\daemon\\9.0-milestone-1\\com.rshbkr.app-main-54:\\xml\\backup_rules.xml"
+        "merged": "com.rshbkr.app-debug-56:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.rshbkr.app-main-58:/drawable/ic_launcher_foreground.xml"
     },
     {
-        "merged": "C:\\Users\\peppe\\.gradle\\daemon\\9.0-milestone-1\\com.rshbkr.app-debug-52:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "C:\\Users\\peppe\\.gradle\\daemon\\9.0-milestone-1\\com.rshbkr.app-main-54:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+        "merged": "com.rshbkr.app-debug-56:/xml_data_extraction_rules.xml.flat",
+        "source": "com.rshbkr.app-main-58:/xml/data_extraction_rules.xml"
     },
     {
-        "merged": "com.rshbkr.app-debug-52:/mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "com.rshbkr.app-main-54:/mipmap-anydpi-v26/ic_launcher.xml"
+        "merged": "com.rshbkr.app-debug-56:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.rshbkr.app-main-58:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
     {
-        "merged": "C:\\Users\\peppe\\.gradle\\daemon\\9.0-milestone-1\\com.rshbkr.app-debug-52:\\drawable_ic_launcher_foreground.xml.flat",
-        "source": "C:\\Users\\peppe\\.gradle\\daemon\\9.0-milestone-1\\com.rshbkr.app-main-54:\\drawable\\ic_launcher_foreground.xml"
+        "merged": "com.rshbkr.app-debug-56:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.rshbkr.app-main-58:/mipmap-anydpi-v26/ic_launcher.xml"
     },
     {
-        "merged": "C:\\Users\\peppe\\.gradle\\daemon\\9.0-milestone-1\\com.rshbkr.app-debug-52:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "C:\\Users\\peppe\\.gradle\\daemon\\9.0-milestone-1\\com.rshbkr.app-main-54:\\mipmap-anydpi-v26\\ic_launcher.xml"
-    },
-    {
-        "merged": "C:\\Users\\peppe\\.gradle\\daemon\\9.0-milestone-1\\com.rshbkr.app-debug-52:\\xml_data_extraction_rules.xml.flat",
-        "source": "C:\\Users\\peppe\\.gradle\\daemon\\9.0-milestone-1\\com.rshbkr.app-main-54:\\xml\\data_extraction_rules.xml"
-    },
-    {
-        "merged": "com.rshbkr.app-debug-52:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "com.rshbkr.app-main-54:/mipmap-anydpi-v26/ic_launcher_round.xml"
+        "merged": "com.rshbkr.app-debug-56:/xml_backup_rules.xml.flat",
+        "source": "com.rshbkr.app-main-58:/xml/backup_rules.xml"
     }
 ]

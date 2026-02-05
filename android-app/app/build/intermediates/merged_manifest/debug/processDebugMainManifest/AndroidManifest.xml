@@ -9,6 +9,7 @@
         android:targetSdkVersion="34" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <permission
         android:name="com.rshbkr.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
@@ -28,7 +29,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:testOnly="true"
-        android:theme="@style/Theme.Rshbkr" >
+        android:theme="@style/Theme.Rshbkr"
+        android:usesCleartextTraffic="true" >
         <activity
             android:name="com.rshbkr.app.MainActivity"
             android:exported="true"

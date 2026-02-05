@@ -23,7 +23,9 @@ import com.rshbkr.app.model.Track
 @Composable
 fun FeedScreen(
     viewModel: FeedViewModel = viewModel(),
-    onTrackClick: (String) -> Unit
+    onTrackClick: (String) -> Unit,
+    onLoginClick: () -> Unit,
+    onNotificationClick: () -> Unit
 ) {
     val tracks by viewModel.tracks.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -48,11 +50,22 @@ fun FeedScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    Text(
-                        text = "RSHBKR",
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "RSHBKR",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Button(onClick = onNotificationClick) {
+                            Text("🔔")
+                        }
+                        Button(onClick = onLoginClick) {
+                            Text("Login")
+                        }
+                    }
                 }
 
                 items(tracks) { track ->

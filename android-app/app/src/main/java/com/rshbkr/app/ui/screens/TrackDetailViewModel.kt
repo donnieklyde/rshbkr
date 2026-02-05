@@ -33,4 +33,43 @@ class TrackDetailViewModel(private val trackId: String) : ViewModel() {
             }
         }
     }
+
+    fun submitRating(
+        feelingStart: Int,
+        ideaIntent: Int,
+        soundTexture: Int,
+        melodyHarmony: Int,
+        rhythmGroove: Int,
+        lyrics: Int,
+        originality: Int,
+        commitment: Int,
+        context: Int,
+        aftertaste: Int,
+        onResult: (Boolean, String?) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                if (_track.value == null) return@launch
+
+                val submission = com.rshbkr.app.model.RatingSubmission(
+                    trackId = _track.value!!.id,
+                    feelingStart = feelingStart,
+                    ideaIntent = ideaIntent,
+                    soundTexture = soundTexture,
+                    melodyHarmony = melodyHarmony,
+                    rhythmGroove = rhythmGroove,
+                    lyrics = lyrics,
+                    originality = originality,
+                    commitment = commitment,
+                    context = context,
+                    aftertaste = aftertaste
+                )
+
+                val response = NetworkClient.apiService.postRating(submission)
+                onResult(response.success, response.error)
+            } catch (e: Exception) {
+                onResult(false, e.message)
+            }
+        }
+    }
 }
