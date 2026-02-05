@@ -1,6 +1,9 @@
+import { auth } from "@/auth"
+import { SignIn, SignOut } from "./components/AuthButtons"
+import { prisma } from "@/lib/prisma"
+import Link from "next/link"
+import NotificationBell from "./components/NotificationBell"
 import UserIdentity from "./components/UserIdentity"
-
-// ... imports ...
 
 export default async function Home() {
   const session = await auth()
