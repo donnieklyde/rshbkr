@@ -1,8 +1,6 @@
-import { auth } from "@/auth"
-import { SignIn, SignOut } from "./components/AuthButtons"
-import { prisma } from "@/lib/prisma"
-import Link from "next/link"
-import NotificationBell from "./components/NotificationBell"
+import UserIdentity from "./components/UserIdentity"
+
+// ... imports ...
 
 export default async function Home() {
   const session = await auth()
@@ -16,9 +14,7 @@ export default async function Home() {
             <>
               <NotificationBell />
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <Link href={`/profile/${(session.user as any)?.username}`} style={{ color: '#888' }}>
-                  @{session.user?.name}
-                </Link>
+                <UserIdentity user={session.user} />
                 <SignOut />
               </div>
             </>

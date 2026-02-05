@@ -22,24 +22,7 @@ export default auth((req) => {
         return NextResponse.next();
     }
 
-    if (isLoggedIn) {
-        if (!isOnboarded && !isOnboardingPage) {
-            return NextResponse.redirect(new URL('/onboarding', nextUrl));
-        }
-        if (isOnboarded && isOnboardingPage) {
-            return NextResponse.redirect(new URL('/', nextUrl));
-        }
-    } else {
-        // If strict login requirement:
-        // return NextResponse.redirect(new URL('/api/auth/signin', nextUrl));
-        // But maybe we want public read access? User said "login via google... after first login..."
-        // implying login is the gate. Let's redirect to signin if accessing protected areas?
-        // Or just let them browse but force login for actions?
-        // Let's stick to: if they are ON onboarding page but not logged in, go home. 
-        if (isOnboardingPage) {
-            return NextResponse.redirect(new URL('/', nextUrl));
-        }
-    }
+    // Previous redirect logic removed to allow modal-based onboarding on the main page.
 
     return NextResponse.next();
 })
