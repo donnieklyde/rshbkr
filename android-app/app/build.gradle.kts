@@ -75,6 +75,9 @@ dependencies {
     // Browser (Custom Tabs for OAuth - kept as fallback if needed)
     implementation(libs.androidx.browser)
 
+    // Background Work
+    implementation(libs.androidx.work)
+
     // Native Google Sign-In (Credential Manager)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)

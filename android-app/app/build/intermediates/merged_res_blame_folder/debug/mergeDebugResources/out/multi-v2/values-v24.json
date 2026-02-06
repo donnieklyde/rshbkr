@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.rshbkr.app-mergeDebugResources-61:/values-v24/values-v24.xml",
+            "outputFile": "com.rshbkr.app-mergeDebugResources-70:/values-v24/values-v24.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\peppe\\.gradle\\caches\\9.0-milestone-1\\transforms\\bf9dd2fb8d1ed8c15976c44978ecd4bd\\transformed\\media-1.7.0\\res\\values-v24\\values-v24.xml",
+                    "source": "C:\\Users\\peppe\\.gradle\\caches\\9.0-milestone-1\\transforms\\4b8c76780e51ef108b028d81276cac97\\transformed\\media-1.7.0\\res\\values-v24\\values-v24.xml",
                     "from": {
                         "startLines": "2,3,4,5",
                         "startColumns": "4,4,4,4",

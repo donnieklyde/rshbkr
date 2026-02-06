@@ -82,15 +82,30 @@ export async function POST(req: Request) {
 
         // 5. Return the Session Token
         // The Android app will use this token in the 'authjs.session-token' cookie
-        return NextResponse.json({
+        const response = NextResponse.json({
             sessionToken: session.sessionToken,
             user: {
                 id: user.id,
                 email: user.email,
                 name: user.name,
-                image: user.image
+                image: user.image,
+                username: user.username,
+                isOnboarded: user.isOnboarded
             }
         })
+
+        // Explicitly set the cookie so the Android CookieJar picks it up
+        response.cookies.set({
+            name: 'authjs.session-token',
+            value: sessionToken,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/',
+            expires: expires,
+        })
+
+        return response
 
     } catch (error) {
         console.error("Native Auth Error:", error)

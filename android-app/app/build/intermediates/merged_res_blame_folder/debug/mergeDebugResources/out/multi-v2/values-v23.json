@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.rshbkr.app-mergeDebugResources-70:/values-v23/values-v23.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\peppe\\.gradle\\caches\\9.0-milestone-1\\transforms\\86a964c7819c1c9474370362398b2089\\transformed\\work-runtime-2.9.0\\res\\values-v23\\values-v23.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,121",
+                        "endColumns": "65,62",
+                        "endOffsets": "116,179"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -83,6 +83,9 @@ fun RshbkrApp(
                     },
                     onNotificationClick = {
                         navController.navigate("notifications")
+                    },
+                    onProfileClick = { userId ->
+                        navController.navigate("profile/$userId")
                     }
                 )
             }
@@ -104,6 +107,16 @@ fun RshbkrApp(
                 TrackDetailScreen(
                     trackId = trackId,
                     onBackClick = { navController.popBackStack() }
+                )
+            }
+            composable("profile/{userId}") { backStackEntry ->
+                val userId = backStackEntry.arguments?.getString("userId") ?: return@composable
+                com.rshbkr.app.ui.screens.ProfileScreen(
+                    userId = userId,
+                    onBackClick = { navController.popBackStack() },
+                    onTrackClick = { trackId ->
+                        navController.navigate("track/$trackId")
+                    }
                 )
             }
         }
