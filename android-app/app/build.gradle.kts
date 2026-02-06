@@ -72,8 +72,13 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)
 
-    // Browser (Custom Tabs for OAuth)
+    // Browser (Custom Tabs for OAuth - kept as fallback if needed)
     implementation(libs.androidx.browser)
+
+    // Native Google Sign-In (Credential Manager)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

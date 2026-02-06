@@ -14,6 +14,7 @@
     "@types/uuid": "^10.0.0",
     "@vercel/blob": "^2.1.0",
     "@vercel/postgres": "^0.10.0",
+    "google-auth-library": "^10.5.0",
     "next": "16.1.6",
     "next-auth": "^5.0.0-beta.30",
     "react": "19.2.3",
