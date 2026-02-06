@@ -16,9 +16,8 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit
 ) {
     val context = LocalContext.current
-    // Add callback URL parameter for deep link redirect
-    val callbackUrl = "rshbkr://callback"
-    val loginUrl = "https://www.rshbkr.com/api/auth/signin?callbackUrl=${Uri.encode(callbackUrl)}"
+    // Use standard NextAuth signin without custom callback
+    val loginUrl = "https://www.rshbkr.com/api/auth/signin"
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -39,7 +38,7 @@ fun LoginScreen(
         }
         
         Spacer(modifier = Modifier.height(16.dp))
-        Text("You'll be redirected back automatically", 
+        Text("After signing in, tap Back to return to the app", 
             modifier = Modifier.padding(horizontal = 32.dp))
     }
 }
