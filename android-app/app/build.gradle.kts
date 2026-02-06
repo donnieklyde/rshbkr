@@ -63,6 +63,7 @@ dependencies {
     // Networking
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
+    implementation(libs.squareup.okhttp3.logging.interceptor)
     
     // Image Loading
     implementation(libs.coil.compose)
@@ -70,6 +71,9 @@ dependencies {
     // Audio
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)
+
+    // Browser (Custom Tabs for OAuth)
+    implementation(libs.androidx.browser)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

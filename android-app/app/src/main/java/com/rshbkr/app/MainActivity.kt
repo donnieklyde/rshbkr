@@ -1,52 +1,73 @@
 package com.rshbkr.app
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.rshbkr.app.ui.screens.FeedScreen
 import com.rshbkr.app.ui.screens.LoginScreen
+import com.rshbkr.app.ui.screens.NotificationScreen
 import com.rshbkr.app.ui.screens.TrackDetailScreen
 import com.rshbkr.app.ui.theme.RshbkrTheme
 
 class MainActivity : ComponentActivity() {
+    private var isLoggedIn by mutableStateOf(false)
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Check if opened via deep link (OAuth callback)
+        handleDeepLink(intent)
+        
         setContent {
             RshbkrTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    RshbkrApp()
+                    RshbkrApp(
+                        isLoggedIn = isLoggedIn,
+                        onLoginSuccess = { isLoggedIn = true }
+                    )
                 }
+            }
+        }
+    }
+    
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleDeepLink(intent)
+    }
+    
+    private fun handleDeepLink(intent: Intent?) {
+        intent?.data?.let { uri ->
+            if (uri.scheme == "rshbkr" && uri.host == "callback") {
+                // Successfully returned from OAuth
+                isLoggedIn = true
             }
         }
     }
 }
 
 @Composable
-fun RshbkrApp() {
+fun RshbkrApp(
+    isLoggedIn: Boolean,
+    onLoginSuccess: () -> Unit
+) {
     val navController = rememberNavController()
 
-    Scaffold(
-        bottomBar = {
-            // Simple Login Button for now if not logged in?
-            // Or just put it in the Feed header.
-        }
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         NavHost(
             navController = navController, 
             startDestination = "feed",
@@ -68,14 +89,14 @@ fun RshbkrApp() {
             composable("login") {
                 LoginScreen(
                     onLoginSuccess = {
-                        // In a real app, we'd extract the cookie here and pass it to NetworkClient
-                        // For now we assume the WebView flow does the heavy lifting, 
-                        // BUT we need to sync that cookie to OkHttp for API calls to work!
-                        // That is a critical step. 
-                        
-                        // Let's navigate back
+                        onLoginSuccess()
                         navController.popBackStack()
                     }
+                )
+            }
+            composable("notifications") {
+                NotificationScreen(
+                    onBackClick = { navController.popBackStack() }
                 )
             }
             composable("track/{trackId}") { backStackEntry ->
