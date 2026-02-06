@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const userId = params.id
+        const { id: userId } = await params
 
         const user = await prisma.user.findUnique({
             where: { id: userId },
