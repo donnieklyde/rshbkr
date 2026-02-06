@@ -1,46 +1,72 @@
 package com.rshbkr.app.ui.screens
 
-import android.net.Uri
-import androidx.browser.customtabs.CustomTabsIntent
+import android.app.Activity
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
+import com.rshbkr.app.auth.GoogleAuthManager
+import com.rshbkr.app.api.NetworkClient
 
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit
 ) {
     val context = LocalContext.current
-    // Use deep link callback to return to app after OAuth
-    val callbackUrl = "rshbkr://callback"
-    val encodedCallback = Uri.encode(callbackUrl)
-    val loginUrl = "https://www.rshbkr.com/api/auth/signin?callbackUrl=$encodedCallback"
+    val scope = rememberCoroutineScope()
+    val authManager = remember { GoogleAuthManager(context) }
+    var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Please sign in to continue")
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {
-            // Open login URL in Chrome Custom Tab
-            val customTabsIntent = CustomTabsIntent.Builder()
-                .setShowTitle(true)
-                .build()
+        if (isLoading) {
+            CircularProgressIndicator()
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("Signing in...")
+        } else {
+            Text("Welcome to rshbkr", style = MaterialTheme.typography.headlineMedium)
+            Spacer(modifier = Modifier.height(32.dp))
             
-            customTabsIntent.launchUrl(context, Uri.parse(loginUrl))
-        }) {
-            Text("Sign in with Google")
+            Button(
+                onClick = {
+                    scope.launch {
+                        isLoading = true
+                        errorMessage = null
+                        
+                        // 1. Native Google Sign-In
+                        val idToken = authManager.signIn(context as Activity)
+                        
+                        if (idToken != null) {
+                            // 2. Exchange Token with Backend
+                            val success = NetworkClient.authenticateWithNativeToken(idToken)
+                            if (success) {
+                                onLoginSuccess()
+                            } else {
+                                errorMessage = "Backend authentication failed"
+                            }
+                        } else {
+                            errorMessage = "Google Sign-In failed or cancelled"
+                        }
+                        isLoading = false
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Sign in with Google (Native)")
+            }
+            
+            if (errorMessage != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(errorMessage!!, color = MaterialTheme.colorScheme.error)
+            }
         }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("You'll be redirected back to the app automatically", 
-            modifier = Modifier.padding(horizontal = 32.dp))
     }
 }
