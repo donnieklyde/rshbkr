@@ -1,6 +1,8 @@
 package com.rshbkr.app.api
 
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -54,10 +56,7 @@ object NetworkClient {
             try {
                 // Manually make POST request to exchange token
                 val json = "{\"idToken\": \"$idToken\"}"
-                val requestBody = okhttp3.RequestBody.create(
-                    okhttp3.MediaType.parse("application/json; charset=utf-8"), 
-                    json
-                )
+                val requestBody = json.toRequestBody("application/json; charset=utf-8".toMediaType())
                 
                 val request = okhttp3.Request.Builder()
                     .url(BASE_URL + "api/auth/native")

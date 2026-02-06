@@ -18,7 +18,7 @@ class GoogleAuthManager(private val context: Context) {
     // REPLACE THIS WITH YOUR ACTUAL WEB CLIENT ID FROM GOOGLE CLOUD CONSOLE (NextAuth ID)
     // The user needs to providing this.
     // For now, using a placeholder that needs to be replaced.
-    private val WEB_CLIENT_ID = "YOUR_WEB_CLIENT_ID_HERE" // TODO: Update this
+    private val WEB_CLIENT_ID = "212210592892-dbltv2dafpo1ga31evhrn7p761gmhpbq.apps.googleusercontent.com"
 
     suspend fun signIn(): String? = withContext(Dispatchers.IO) {
         try {
@@ -46,11 +46,19 @@ class GoogleAuthManager(private val context: Context) {
     }
 
     // Modern Credential Manager requires Activity to show the bottom sheet
-    suspend fun signIn(activity: android.app.Activity): String? {
+    suspend fun signIn(activity: android.app.Activity): Result<String> {
         try {
+            // Generate a nonce (required for security and sometimes to avoid developer errors)
+            val nonce = java.util.UUID.randomUUID().toString()
+            val hashedNonce = java.security.MessageDigest.getInstance("SHA-256")
+                .digest(nonce.toByteArray())
+                .joinToString("") { "%02x".format(it) }
+
+            // Using GetGoogleIdOption directly with specific parameters
             val googleIdOption = GetGoogleIdOption.Builder()
-                .setFilterByAuthorizedAccounts(false)
+                .setFilterByAuthorizedAccounts(false) // Allow selection of any account
                 .setServerClientId(WEB_CLIENT_ID)
+                .setNonce(hashedNonce) // Set the nonce
                 .setAutoSelectEnabled(false)
                 .build()
 
@@ -63,13 +71,19 @@ class GoogleAuthManager(private val context: Context) {
                 context = activity
             )
 
-            return handleSignIn(result)
+            val idToken = handleSignIn(result)
+            return if (idToken != null) {
+                Result.success(idToken)
+            } else {
+                Result.failure(Exception("Failed to parse ID Token from credential"))
+            }
         } catch (e: GetCredentialException) {
             Log.e("GoogleAuth", "Credential Manager error: ${e.message}")
-            return null
+            // Provide more specific error info if possible
+            return Result.failure(e)
         } catch (e: Exception) {
             Log.e("GoogleAuth", "Unknown error", e)
-            return null
+            return Result.failure(e)
         }
     }
 

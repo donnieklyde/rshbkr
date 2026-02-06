@@ -42,9 +42,9 @@ fun LoginScreen(
                         errorMessage = null
                         
                         // 1. Native Google Sign-In
-                        val idToken = authManager.signIn(context as Activity)
+                        val result = authManager.signIn(context as Activity)
                         
-                        if (idToken != null) {
+                        result.onSuccess { idToken ->
                             // 2. Exchange Token with Backend
                             val success = NetworkClient.authenticateWithNativeToken(idToken)
                             if (success) {
@@ -52,9 +52,10 @@ fun LoginScreen(
                             } else {
                                 errorMessage = "Backend authentication failed"
                             }
-                        } else {
-                            errorMessage = "Google Sign-In failed or cancelled"
+                        }.onFailure { e ->
+                            errorMessage = "Sign-In Error: ${e.message}\n(${e::class.simpleName})"
                         }
+                        
                         isLoading = false
                     }
                 },
