@@ -1,4 +1,4 @@
-#Fri Feb 06 02:22:38 CET 2026
+#Fri Feb 06 02:40:08 CET 2026
 base.0=C\:\\Users\\peppe\\Documents\\AI_slop\\rshbkr\\android-app\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
 base.1=C\:\\Users\\peppe\\Documents\\AI_slop\\rshbkr\\android-app\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
 base.2=C\:\\Users\\peppe\\Documents\\AI_slop\\rshbkr\\android-app\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\10\\classes.dex

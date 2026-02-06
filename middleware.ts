@@ -22,6 +22,12 @@ export default auth((req) => {
         return NextResponse.next();
     }
 
+    // Allow mobile app deep link redirects
+    const callbackUrl = nextUrl.searchParams.get('callbackUrl');
+    if (callbackUrl?.startsWith('rshbkr://')) {
+        return NextResponse.redirect(callbackUrl);
+    }
+
     // Previous redirect logic removed to allow modal-based onboarding on the main page.
 
     return NextResponse.next();
