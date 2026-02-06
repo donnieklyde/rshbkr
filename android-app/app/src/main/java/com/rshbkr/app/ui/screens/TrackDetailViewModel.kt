@@ -45,6 +45,7 @@ class TrackDetailViewModel(private val trackId: String) : ViewModel() {
         commitment: Int,
         context: Int,
         aftertaste: Int,
+        comment: String,
         onResult: (Boolean, String?) -> Unit
     ) {
         viewModelScope.launch {
@@ -62,7 +63,8 @@ class TrackDetailViewModel(private val trackId: String) : ViewModel() {
                     originality = originality,
                     commitment = commitment,
                     context = context,
-                    aftertaste = aftertaste
+                    aftertaste = aftertaste,
+                    summary = if (comment.isBlank()) null else comment
                 )
 
                 val response = NetworkClient.apiService.postRating(submission)

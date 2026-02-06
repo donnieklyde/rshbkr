@@ -114,9 +114,10 @@ fun TrackDetailScreen(
             
             Spacer(modifier = Modifier.height(32.dp))
             Text("Rate this Track", style = MaterialTheme.typography.titleLarge)
-            RatingForm(onSubmit = { f, i, s, m, r, l, o, c, ctx, a ->
-                viewModel.submitRating(f, i, s, m, r, l, o, c, ctx, a) { success, err ->
-                    // Show toast or snackbar logic handled here or hoisted
+            RatingForm(onSubmit = { f, i, s, m, r, l, o, c, ctx, a, comment ->
+                viewModel.submitRating(f, i, s, m, r, l, o, c, ctx, a, comment) { success, err ->
+                    val msg = if (success) "Rating Submitted with Comment!" else "Error: $err"
+                    android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_SHORT).show()
                 }
             })
         }
@@ -125,7 +126,7 @@ fun TrackDetailScreen(
 
 @Composable
 fun RatingForm(
-    onSubmit: (Int, Int, Int, Int, Int, Int, Int, Int, Int, Int) -> Unit
+    onSubmit: (Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, String) -> Unit
 ) {
     var feelingStart by remember { mutableFloatStateOf(5f) }
     var ideaIntent by remember { mutableFloatStateOf(5f) }
@@ -138,6 +139,8 @@ fun RatingForm(
     var context by remember { mutableFloatStateOf(5f) }
     var aftertaste by remember { mutableFloatStateOf(5f) }
 
+    var comment by remember { mutableStateOf("") }
+    
     Column {
         RatingSlider("Feeling / Start", feelingStart) { feelingStart = it }
         RatingSlider("Idea / Intent", ideaIntent) { ideaIntent = it }
@@ -150,12 +153,23 @@ fun RatingForm(
         RatingSlider("Context", context) { context = it }
         RatingSlider("Aftertaste", aftertaste) { aftertaste = it }
         
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = comment,
+            onValueChange = { comment = it },
+            label = { Text("Comment (Optional)") },
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 3
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        
         Button(
             onClick = {
                 onSubmit(
                     feelingStart.toInt(), ideaIntent.toInt(), soundTexture.toInt(),
                     melodyHarmony.toInt(), rhythmGroove.toInt(), lyrics.toInt(),
-                    originality.toInt(), commitment.toInt(), context.toInt(), aftertaste.toInt()
+                    originality.toInt(), commitment.toInt(), context.toInt(), aftertaste.toInt(),
+                    comment
                 )
             },
             modifier = Modifier.fillMaxWidth().padding(top = 16.dp)

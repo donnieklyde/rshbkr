@@ -46,7 +46,11 @@ fun ProfileScreen(
     val viewModel: ProfileViewModel = viewModel()
     val profile by viewModel.profileState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val currentUser by NetworkClient.currentUser.collectAsState()
 
+    // Refresh profile check should be moved or kept? 
+    // If we logout, we should navigate back.
+    
     LaunchedEffect(userId) {
         viewModel.loadProfile(userId)
     }
@@ -58,6 +62,17 @@ fun ProfileScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    // Show Logout if it's my profile
+                    if (currentUser != null && currentUser?.id == userId) {
+                        TextButton(onClick = {
+                            NetworkClient.signOut()
+                            onBackClick() // Go back to feed presumably
+                        }) {
+                            Text("Logout", color = MaterialTheme.colorScheme.error)
+                        }
                     }
                 }
             )

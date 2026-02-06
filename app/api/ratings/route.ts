@@ -62,10 +62,16 @@ export async function POST(req: Request) {
 
         // Create Notification (only if not self-rating)
         if (track.artistId !== session.user.id) {
+            const raterName = session.user.name || session.user.username || 'Someone'
+            let content = `${raterName} rated "${track.title}"`
+            if (summary) {
+                content += `: "${summary.substring(0, 30)}${summary.length > 30 ? '...' : ''}"`
+            }
+
             await prisma.notification.create({
                 data: {
                     userId: track.artistId,
-                    content: `@${session.user.name || 'someone'} rated "${track.title}"`,
+                    content: content,
                     link: `/track/${trackId}?highlight=${rating.id}`,
                     type: 'rating'
                 }
