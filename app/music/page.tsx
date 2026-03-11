@@ -201,6 +201,19 @@ export default function MusicPage() {
 
   const currentTrack = currentIndex !== null ? tracks[currentIndex] : null;
 
+  // Integrate Hit Counter Plugin
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = '/counter/index.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+      const element = document.getElementById('rshbkr-counter');
+      if (element) element.remove();
+    };
+  }, []);
+
   return (
     <>
       <style>{`
