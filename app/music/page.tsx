@@ -32,6 +32,10 @@ function formatTime(s: number) {
   return `${m}:${sec.toString().padStart(2, '0')}`;
 }
 
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe('pk_test_51SM7RtRo0zWHQUn80vTrSFaf4rDOyDSdR8OYPddFzMLs3MsOsPQFo5YUKacE3K9KlSAMMZUlJgSySmCqnXdheiGk008ZKANUXy');
+
 interface PayModalProps {
   track: { id: number | string, title: string, file: string | string[] };
   onClose: () => void;
@@ -39,22 +43,19 @@ interface PayModalProps {
 
 function PayModal({ track, onClose }: PayModalProps) {
   const [amount, setAmount] = useState('');
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const presets = ['0', '1', '3', '5', '10', '20'];
 
-  const handleDownload = async () => {
-    setIsDownloading(true);
+  const triggerDownload = (url: string, filename: string) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
-    const triggerDownload = (url: string, filename: string) => {
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', filename);
-      link.setAttribute('target', '_blank'); // Open in new tab for Drive links download
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    };
-
+  const executeDownloadAction = async () => {
     if (Array.isArray(track.file)) {
       for (const [idx, f] of track.file.entries()) {
         const fileName = `${tracks.find(t => t.file === f)?.title || 'track'}.mp3`;
@@ -65,9 +66,38 @@ function PayModal({ track, onClose }: PayModalProps) {
       const fileName = `${track.title}.mp3`;
       triggerDownload(track.file, fileName);
     }
+  };
 
-    setIsDownloading(false);
-    onClose();
+  const handleDownloadClick = async () => {
+    const numAmount = Number(amount);
+
+    if (numAmount > 0) {
+      setIsProcessing(true);
+      try {
+        const response = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: numAmount, trackTitle: track.title }),
+        });
+        const session = await response.json();
+
+        if (session.error) throw new Error(session.error);
+
+        const stripe = await stripePromise;
+        const { error } = await stripe!.redirectToCheckout({ sessionId: session.id });
+
+        if (error) throw error;
+      } catch (err: any) {
+        alert(err.message);
+        setIsProcessing(false);
+      }
+    } else {
+      // Free download
+      setIsProcessing(true);
+      await executeDownloadAction();
+      setIsProcessing(false);
+      onClose();
+    }
   };
 
   return (
@@ -98,15 +128,15 @@ function PayModal({ track, onClose }: PayModalProps) {
         />
         {amount !== '' && Number(amount) > 0 && (
           <p className="modal-note">
-            thank you 🖤 — payment is honor-based, the download is always free.
+            thank you 🖤 — support the music with Stripe.
           </p>
         )}
         <button
           className="modal-download-btn"
-          onClick={handleDownload}
-          disabled={isDownloading}
+          onClick={handleDownloadClick}
+          disabled={isProcessing}
         >
-          {isDownloading ? '... starting' : '↓ download'}
+          {isProcessing ? '... processing' : (Number(amount) > 0 ? 'Proceed to Payment' : '↓ download')}
         </button>
       </div>
     </div>
