@@ -133,7 +133,8 @@ function PayModal({ track, onClose }: PayModalProps) {
         />
         {amount !== '' && Number(amount) > 0 && (
           <p className="modal-note">
-            thank you 🖤 — support the music with Stripe.
+            you legend.
+            give me more
           </p>
         )}
         <button
@@ -205,7 +206,14 @@ function MusicContent() {
 
   const togglePlay = () => {
     const audio = audioRef.current;
-    if (!audio || currentIndex === null) return;
+    if (!audio) return;
+
+    // If no track is selected, start with the first one
+    if (currentIndex === null) {
+      setCurrentIndex(0);
+      return;
+    }
+
     if (isPlaying) {
       audio.pause();
       setIsPlaying(false);
