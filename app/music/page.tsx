@@ -322,6 +322,12 @@ function MusicContent() {
           margin-bottom: 0.5rem;
           gap: 1rem;
         }
+        @media (max-width: 600px) {
+          .header {
+            flex-direction: column;
+            align-items: stretch;
+          }
+        }
         .site-title {
           font-family: 'Bahnschrift', 'Arial Narrow', sans-serif;
           font-size: clamp(1.4rem, 5vw, 2.2rem);
@@ -357,6 +363,13 @@ function MusicContent() {
           transition: background 0.2s, border-color 0.2s;
           white-space: nowrap;
           flex-shrink: 0;
+          text-align: center;
+        }
+        @media (max-width: 600px) {
+          .download-all-btn {
+            width: 100%;
+            margin-top: 0.5rem;
+          }
         }
         .download-all-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.5); }
 
