@@ -15,7 +15,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: {
     template: '%s | RSHBKR',
-    default: 'RSHBKR | Music, Critiques, Love',
+    default: 'RSHBKR',
+  },
+  icons: {
+    icon: '/favicon.png',
   },
   description: "The ultimate platform for underground music, raw critiques, and finding love in the noise. Share your sound, rate track with depth, and connect.",
   keywords: ["music", "critiques", "love", "rshbkr", "reviews", "underground", "artist", "rating"],
