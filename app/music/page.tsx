@@ -317,16 +317,22 @@ function MusicContent() {
         /* ── Header ── */
         .header {
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           justify-content: space-between;
           margin-bottom: 0.5rem;
           gap: 1rem;
         }
-        @media (max-width: 600px) {
-          .header {
-            flex-direction: column;
-            align-items: stretch;
-          }
+        .spotify-link {
+          line-height: 0;
+          transition: opacity 0.2s;
+        }
+        .spotify-link:hover {
+          opacity: 0.8;
+        }
+        .spotify-icon {
+          width: 28px;
+          height: 28px;
+          object-fit: contain;
         }
         .site-title {
           font-family: 'Bahnschrift', 'Arial Narrow', sans-serif;
@@ -339,6 +345,9 @@ function MusicContent() {
         .header-info {
           margin-bottom: 2.5rem;
           line-height: 1.4;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
         }
         .made-by {
           font-size: 1.1rem;
@@ -349,6 +358,7 @@ function MusicContent() {
           font-size: 0.85rem;
           color: rgba(255,255,255,0.4);
           letter-spacing: 0.05em;
+          margin-bottom: 1rem;
         }
         .download-all-btn {
           background: transparent;
@@ -368,7 +378,6 @@ function MusicContent() {
         @media (max-width: 600px) {
           .download-all-btn {
             width: 100%;
-            margin-top: 0.5rem;
           }
         }
         .download-all-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.5); }
@@ -689,6 +698,23 @@ function MusicContent() {
         {/* Header */}
         <div className="header">
           <h1 className="site-title">HTTP://hvnPUNKTwtf</h1>
+          <a
+            href="https://open.spotify.com/intl-de/artist/6tfwwneluyyYjNsy1un3WV"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="spotify-link"
+            title="Listen on Spotify"
+          >
+            <img
+              src="/images/schrottify_icon.png"
+              alt="Spotify"
+              className="spotify-icon"
+            />
+          </a>
+        </div>
+        <div className="header-info">
+          <p className="made-by">made by 𝗥𝗦𝗛𝗕𝗞𝗥</p>
+          <p className="release-date">20.03 on spotify and everywhere</p>
           <button
             className="download-all-btn"
             onClick={() => {
@@ -701,10 +727,6 @@ function MusicContent() {
           >
             ↓ download all
           </button>
-        </div>
-        <div className="header-info">
-          <p className="made-by">made by 𝗥𝗦𝗛𝗕𝗞𝗥</p>
-          <p className="release-date">20.03 on spotify and everywhere</p>
         </div>
 
         {/* Track List */}
