@@ -35,7 +35,7 @@ function formatTime(s: number) {
 
 import { loadStripe } from '@stripe/stripe-js';
 
-const stripePromise = loadStripe('pk_test_51SM7RtRo0zWHQUn80vTrSFaf4rDOyDSdR8OYPddFzMLs3MsOsPQFo5YUKacE3K9KlSAMMZUlJgSySmCqnXdheiGk008ZKANUXy');
+const stripePromise = loadStripe('pk_live_51SM7RtRo0zWHQUn8TztsYvBVnYmC1wKcPrxN31EFn8hha5bHvZltMpN7Uv3TFMWjqcOPDKFIdEvNeC60X31dntGt00U8xnAOgt');
 
 interface PayModalProps {
   track: { id: number | string, title: string, file: string | string[] };
