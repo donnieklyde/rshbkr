@@ -4,23 +4,26 @@ import { useState, useRef, useEffect } from 'react';
 import type { Metadata } from 'next';
 
 const tracks = [
-  { id: 1, title: 'arschvoll', file: '/music/arschvoll.mp3' },
-  { id: 2, title: 'exitus', file: '/music/exitus.mp3' },
-  { id: 3, title: 'dicke männer in meinem schornsteinschacht', file: '/music/dicke männer in meinem schornsteinschacht.mp3' },
-  { id: 4, title: 'femme fatale hat sich togelacht', file: '/music/femme fatale hat sich togelacht.mp3' },
-  { id: 5, title: 'gefühlstechnisch', file: '/music/gefühlstechnisch.mp3' },
-  { id: 6, title: 'butterweich', file: '/music/butterweich.mp3' },
-  { id: 7, title: 'fluss', file: '/music/fluss.mp3' },
-  { id: 8, title: 'lalilove', file: '/music/lalilove.mp3' },
-  { id: 9, title: 'lowlifespielerpolitikfickzeit vorbei', file: '/music/lowlifespielerpolitikfickzeit vorbei.mp3' },
-  { id: 10, title: 'melodie', file: '/music/melodie.mp3' },
-  { id: 11, title: 'nice', file: '/music/nice.mp3' },
-  { id: 12, title: 'party', file: '/music/party.mp3' },
-  { id: 13, title: 'paralyze', file: '/music/paralyze.mp3' },
-  { id: 14, title: 'pfand II', file: '/music/pfand II.mp3' },
-  { id: 15, title: 'danke an jesus', file: '/music/danke an jesus.mp3' },
-  { id: 16, title: 'schizo nur ein shizo', file: '/music/schizo nur ein shizo.mp3' },
-];
+  { id: 1, title: 'arschvoll', fileRaw: '1J_tjXmXvCEsjsgebqeoDeBXIvBnZukC2' },
+  { id: 2, title: 'exitus', fileRaw: '1jQnx9AD4G0mA9POMkH5Z40l6Gygp5U0O' },
+  { id: 3, title: 'dicke männer in meinem schornsteinschacht', fileRaw: '1u80-QGdcR0fddQ_CycVbXy95eoo0RWkq' },
+  { id: 4, title: 'femme fatale hat sich togelacht', fileRaw: '1-_akicgdMGMSPHjXVsB-tgsqRCyyzcFy' },
+  { id: 5, title: 'gefühlstechnisch', fileRaw: '1DJYIHM1z44qdXf_Pm9tjX3tcBYi1Km1Q' },
+  { id: 6, title: 'butterweich', fileRaw: '1D3ZvwOkjYrOXA5xNVy7D_GcdGSQAyDqZ' },
+  { id: 7, title: 'fluss', fileRaw: '1OKIbmZlk5iBP9xccNop53GsyQtvPNfxE' },
+  { id: 8, title: 'lalilove', fileRaw: '1v18wQyazriQPEZ0w-tKBnXNEKHcd6eqh' },
+  { id: 9, title: 'lowlifespielerpolitikfickzeit vorbei', fileRaw: '1t6NWG7pSnEC31Cyx8HIEnI1jHmWhAKkC' },
+  { id: 10, title: 'melodie', fileRaw: '1x3vK_V126mX08gLqBeDcwscHWf9t2iH-' },
+  { id: 11, title: 'nice', fileRaw: '1j5G51R3I8sqMk9aDJgltUZx7xYHnCXFo' },
+  { id: 12, title: 'party', fileRaw: '131QUabmPIL0D_MaC2nBVRl4G9czLu1sx' },
+  { id: 13, title: 'paralyze', fileRaw: '1mCTVWcZCHFbmC0fGH0n2ick-B9Dl3K-p' },
+  { id: 14, title: 'pfand II', fileRaw: '1K0DvPFD6aABlisSVB9tgpDebE1QTKnbd' },
+  { id: 15, title: 'danke an jesus', fileRaw: '1tLxkZ1T7RxzUMT19SOihMjcf7Ly1rRJK' },
+  { id: 16, title: 'schizo nur ein shizo', fileRaw: '131sCnZ9FhwHjtRbpBHpEUUbkljgnpO5V' },
+].map(t => ({
+  ...t,
+  file: `https://docs.google.com/uc?export=download&id=${t.fileRaw}`
+}));
 
 const ALL_TRACKS_ID = 'all-tracks';
 const ALL_TRACKS_TITLE = 'Full Album (All Tracks)';
@@ -33,7 +36,7 @@ function formatTime(s: number) {
 }
 
 interface PayModalProps {
-  track: typeof tracks[0] | { id: string, title: string, file: string[] };
+  track: { id: number | string, title: string, file: string | string[] };
   onClose: () => void;
 }
 
@@ -49,19 +52,19 @@ function PayModal({ track, onClose }: PayModalProps) {
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', filename);
+      link.setAttribute('target', '_blank'); // Open in new tab for Drive links download
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     };
 
-    if ('file' in track && Array.isArray(track.file)) {
-      // Sequential download to prevent browser blocking/naming issues
+    if (Array.isArray(track.file)) {
       for (const [idx, f] of track.file.entries()) {
-        const fileName = f.split('/').pop() || `track-${idx + 1}.mp3`;
+        const fileName = `${tracks.find(t => t.file === f)?.title || 'track'}.mp3`;
         triggerDownload(f, fileName);
         await new Promise(r => setTimeout(r, 600));
       }
-    } else if ('file' in track && typeof track.file === 'string') {
+    } else {
       const fileName = `${track.title}.mp3`;
       triggerDownload(track.file, fileName);
     }
