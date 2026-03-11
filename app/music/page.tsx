@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import type { Metadata } from 'next';
 
 const tracks = [
@@ -77,7 +78,11 @@ function PayModal({ track, onClose }: PayModalProps) {
         const response = await fetch('/api/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: numAmount, trackTitle: track.title }),
+          body: JSON.stringify({
+            amount: numAmount,
+            trackTitle: track.title,
+            trackId: track.id
+          }),
         });
         const session = await response.json();
 
@@ -144,6 +149,15 @@ function PayModal({ track, onClose }: PayModalProps) {
 }
 
 export default function MusicPage() {
+  return (
+    <Suspense fallback={<div className="page" style={{ textAlign: 'center', padding: '10rem' }}>...</div>}>
+      <MusicContent />
+    </Suspense>
+  );
+}
+
+function MusicContent() {
+  const searchParams = useSearchParams();
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
@@ -227,6 +241,40 @@ export default function MusicPage() {
   };
 
   const currentTrack = currentIndex !== null ? tracks[currentIndex] : null;
+
+  // Handle Stripe Success Download
+  useEffect(() => {
+    const success = searchParams.get('success');
+    const trackId = searchParams.get('trackId');
+    if (success === 'true' && trackId) {
+      // Clear URL params without reloading
+      window.history.replaceState({}, '', '/music');
+
+      const triggerDownload = (url: string, filename: string) => {
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+
+      if (trackId === ALL_TRACKS_ID) {
+        const downloadAll = async () => {
+          for (const t of tracks) {
+            triggerDownload(t.file, `${t.title}.mp3`);
+            await new Promise(r => setTimeout(r, 600));
+          }
+        };
+        downloadAll();
+      } else {
+        const track = tracks.find(t => String(t.id) === trackId);
+        if (track) {
+          triggerDownload(track.file, `${track.title}.mp3`);
+        }
+      }
+    }
+  }, [searchParams]);
 
   // Integrate Hit Counter Plugin
   useEffect(() => {

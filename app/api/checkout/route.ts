@@ -7,7 +7,7 @@ const stripe = new Stripe('sk_test_51SM7RtRo0zWHQUn80fQxNSLROKnZ2L3GpE32j7IiZdCz
 
 export async function POST(req: Request) {
     try {
-        const { amount, trackTitle } = await req.json();
+        const { amount, trackTitle, trackId } = await req.json();
 
         if (!amount || amount <= 0) {
             return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
                 },
             ],
             mode: 'payment',
-            success_url: `${req.headers.get('origin')}/music?success=true`,
+            success_url: `${req.headers.get('origin')}/music?success=true&trackId=${trackId}`,
             cancel_url: `${req.headers.get('origin')}/music?canceled=true`,
         });
 
