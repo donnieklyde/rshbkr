@@ -95,11 +95,14 @@ export async function POST(req: Request) {
         })
 
         // Explicitly set the cookie so the Android CookieJar picks it up
+        const isProduction = process.env.NODE_ENV === 'production'
+        const cookieName = isProduction ? '__Secure-authjs.session-token' : 'authjs.session-token'
+
         response.cookies.set({
-            name: 'authjs.session-token',
+            name: cookieName,
             value: sessionToken,
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: isProduction,
             sameSite: 'lax',
             path: '/',
             expires: expires,
