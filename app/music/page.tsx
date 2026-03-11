@@ -334,13 +334,11 @@ function MusicContent() {
           height: 28px;
           object-fit: contain;
         }
-        .site-title {
-          font-family: 'Bahnschrift', 'Arial Narrow', sans-serif;
-          font-size: clamp(1.4rem, 5vw, 2.2rem);
-          font-weight: 700;
-          letter-spacing: 0.05em;
-          color: #fff;
-          text-transform: uppercase;
+        .header-logo {
+          height: clamp(35px, 8vw, 65px);
+          width: auto;
+          object-fit: contain;
+          display: block;
         }
         .header-info {
           margin-bottom: 2.5rem;
@@ -697,7 +695,7 @@ function MusicContent() {
       <div className="page">
         {/* Header */}
         <div className="header">
-          <h1 className="site-title">HTTP://hvnPUNKTwtf</h1>
+          <img src="/images/RSHBKR_LOGO.png" alt="RSHBKR" className="header-logo" />
           <a
             href="https://open.spotify.com/intl-de/artist/6tfwwneluyyYjNsy1un3WV"
             target="_blank"
