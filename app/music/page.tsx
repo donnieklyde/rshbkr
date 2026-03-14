@@ -4,27 +4,12 @@ import { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import type { Metadata } from 'next';
 
-const tracks = [
-  { id: 1, title: 'arschvoll', file: '/music/arschvoll.mp3' },
-  { id: 2, title: 'exitus', file: '/music/exitus.mp3' },
-  { id: 3, title: 'dicke männer in meinem schornsteinschacht', file: '/music/dicke männer in meinem schornsteinschacht.mp3' },
-  { id: 4, title: 'femme fatale hat sich togelacht', file: '/music/femme fatale hat sich togelacht.mp3' },
-  { id: 5, title: 'gefühlstechnisch', file: '/music/gefühlstechnisch.mp3' },
-  { id: 6, title: 'butterweich', file: '/music/butterweich.mp3' },
-  { id: 7, title: 'fluss', file: '/music/fluss.mp3' },
-  { id: 8, title: 'lalilove', file: '/music/lalilove.mp3' },
-  { id: 9, title: 'lowlifespielerpolitikfickzeit vorbei', file: '/music/lowlifespielerpolitikfickzeit vorbei.mp3' },
-  { id: 10, title: 'melodie', file: '/music/melodie.mp3' },
-  { id: 11, title: 'nice', file: '/music/nice.mp3' },
-  { id: 12, title: 'party', file: '/music/party.mp3' },
-  { id: 13, title: 'paralyze', file: '/music/paralyze.mp3' },
-  { id: 14, title: 'pfand II', file: '/music/pfand II.mp3' },
-  { id: 15, title: 'danke an jesus', file: '/music/danke an jesus.mp3' },
-  { id: 16, title: 'schizo nur ein shizo', file: '/music/schizo nur ein shizo.mp3' },
-];
+import { player1Tracks, player2Tracks, allTracks } from './tracks';
 
 const ALL_TRACKS_ID = 'all-tracks';
 const ALL_TRACKS_TITLE = 'Full Album (All Tracks)';
+const ALL_PLAYER2_ID = 'all-player2';
+const ALL_PLAYER2_TITLE = 'ΡΣΡΡΣNƉRIVΣR Full Album';
 
 function formatTime(s: number) {
   if (!isFinite(s) || isNaN(s)) return '0:00';
@@ -59,7 +44,7 @@ function PayModal({ track, onClose }: PayModalProps) {
   const executeDownloadAction = async () => {
     if (Array.isArray(track.file)) {
       for (const [idx, f] of track.file.entries()) {
-        const fileName = `${tracks.find(t => t.file === f)?.title || 'track'}.mp3`;
+        const fileName = `${allTracks.find(t => t.file === f)?.title || 'track'}.mp3`;
         triggerDownload(f, fileName);
         await new Promise(r => setTimeout(r, 600));
       }
@@ -159,24 +144,28 @@ export default function MusicPage() {
 
 function MusicContent() {
   const searchParams = useSearchParams();
+  const [activeList, setActiveList] = useState<'p1' | 'p2' | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+
+  const currentList = activeList === 'p1' ? player1Tracks : activeList === 'p2' ? player2Tracks : [];
+  const currentTrack = activeList && currentIndex !== null ? currentList[currentIndex] : null;
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [payTrack, setPayTrack] = useState<typeof tracks[0] | { id: string, title: string, file: string[] } | null>(null);
+  const [payTrack, setPayTrack] = useState<typeof allTracks[0] | { id: string, title: string, file: string[] } | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // sync audio source when track changes
   useEffect(() => {
-    if (currentIndex === null) return;
+    if (activeList === null || currentIndex === null) return;
     const audio = audioRef.current;
     if (!audio) return;
-    audio.src = tracks[currentIndex].file;
+    audio.src = currentList[currentIndex].file;
     audio.volume = volume;
     audio.play().then(() => setIsPlaying(true)).catch(() => { });
-  }, [currentIndex]);
+  }, [currentIndex, activeList, currentList]);
 
   // sync volume
   useEffect(() => {
@@ -195,7 +184,7 @@ function MusicContent() {
   };
 
   const handleEnded = () => {
-    if (currentIndex !== null && currentIndex < tracks.length - 1) {
+    if (currentIndex !== null && currentIndex < currentList.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
       setIsPlaying(false);
@@ -209,7 +198,8 @@ function MusicContent() {
     if (!audio) return;
 
     // If no track is selected, start with the first one
-    if (currentIndex === null) {
+    if (activeList === null || currentIndex === null) {
+      setActiveList('p1');
       setCurrentIndex(0);
       return;
     }
@@ -222,10 +212,11 @@ function MusicContent() {
     }
   };
 
-  const selectTrack = (index: number) => {
-    if (currentIndex === index) {
+  const selectTrack = (index: number, listName: 'p1' | 'p2') => {
+    if (activeList === listName && currentIndex === index) {
       togglePlay();
     } else {
+      setActiveList(listName);
       setCurrentIndex(index);
     }
   };
@@ -239,16 +230,16 @@ function MusicContent() {
   };
 
   const skipPrev = () => {
-    if (currentIndex === null || currentIndex === 0) return;
+    if (activeList === null || currentIndex === null || currentIndex === 0) return;
     setCurrentIndex(currentIndex - 1);
   };
 
   const skipNext = () => {
-    if (currentIndex === null || currentIndex >= tracks.length - 1) return;
+    if (activeList === null || currentIndex === null || currentIndex >= currentList.length - 1) return;
     setCurrentIndex(currentIndex + 1);
   };
 
-  const currentTrack = currentIndex !== null ? tracks[currentIndex] : null;
+  
 
   // Handle Stripe Success Download
   useEffect(() => {
@@ -269,14 +260,22 @@ function MusicContent() {
 
       if (trackId === ALL_TRACKS_ID) {
         const downloadAll = async () => {
-          for (const t of tracks) {
+          for (const t of player1Tracks) {
+            triggerDownload(t.file, `${t.title}.mp3`);
+            await new Promise(r => setTimeout(r, 600));
+          }
+        };
+        downloadAll();
+      } else if (trackId === ALL_PLAYER2_ID) {
+        const downloadAll = async () => {
+          for (const t of player2Tracks) {
             triggerDownload(t.file, `${t.title}.mp3`);
             await new Promise(r => setTimeout(r, 600));
           }
         };
         downloadAll();
       } else {
-        const track = tracks.find(t => String(t.id) === trackId);
+        const track = allTracks.find(t => String(t.id) === trackId);
         if (track) {
           triggerDownload(track.file, `${track.title}.mp3`);
         }
@@ -721,7 +720,7 @@ function MusicContent() {
               setPayTrack({
                 id: ALL_TRACKS_ID,
                 title: ALL_TRACKS_TITLE,
-                file: tracks.map(t => t.file)
+                file: player1Tracks.map(t => t.file)
               });
             }}
           >
@@ -731,14 +730,73 @@ function MusicContent() {
 
         {/* Track List */}
         <div className="track-list" role="list">
-          {tracks.map((track, index) => {
-            const isActive = currentIndex === index;
+          {player1Tracks.map((track, index) => {
+            const isActive = activeList === 'p1' && currentIndex === index;
             return (
               <div
                 key={track.id}
                 className={`track-row ${isActive ? 'active' : ''}`}
                 role="listitem"
-                onClick={() => selectTrack(index)}
+                onClick={() => selectTrack(index, 'p1')}
+              >
+                <div className="track-num-wrap">
+                  {isActive ? (
+                    <div className={`eq-bars ${isPlaying ? '' : 'paused'}`}>
+                      <div className="eq-bar" style={{ height: '4px' }} />
+                      <div className="eq-bar" style={{ height: '10px' }} />
+                      <div className="eq-bar" style={{ height: '7px' }} />
+                    </div>
+                  ) : (
+                    <span className="track-num">{String(index + 1).padStart(2, '0')}</span>
+                  )}
+                </div>
+                <span className="track-title">{track.title}</span>
+                <button
+                  className="dl-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPayTrack(track);
+                  }}
+                  title="download"
+                >
+                  ↓
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Player 2 Header Details */}
+        <div className="header" style={{ marginTop: '4rem' }}>
+          <h2 className="site-title" style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold' }}>ΡΣΡΡΣNƉRIVΣR</h2>
+        </div>
+        <div className="header-info">
+          <p className="made-by">made by 𝗥𝗦𝗛𝗕𝗞𝗥</p>
+          <p className="release-date">20.03 on spotify and everywhere</p>
+          <button
+            className="download-all-btn"
+            onClick={() => {
+              setPayTrack({
+                id: ALL_PLAYER2_ID,
+                title: ALL_PLAYER2_TITLE,
+                file: player2Tracks.map(t => t.file)
+              });
+            }}
+          >
+            ↓ download all
+          </button>
+        </div>
+
+        {/* Track List 2 */}
+        <div className="track-list" role="list">
+          {player2Tracks.map((track, index) => {
+            const isActive = activeList === 'p2' && currentIndex === index;
+            return (
+              <div
+                key={track.id}
+                className={`track-row ${isActive ? 'active' : ''}`}
+                role="listitem"
+                onClick={() => selectTrack(index, 'p2')}
               >
                 <div className="track-num-wrap">
                   {isActive ? (
