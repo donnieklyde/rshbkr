@@ -1,14 +1,13 @@
 
-import { getFolderFiles } from "@/app/lib/drive";
+import { getSoftware } from "@/app/lib/db";
 
 export const metadata = {
   title: 'Software',
 };
 
-
 export default async function SoftwarePage() {
-  const folderId = '1ZpiEEoBDE1HG9xjyAeiyLd5-X4Zv5cqn';
-  const files = await getFolderFiles(folderId);
+  const files = await getSoftware();
+
 
   return (
     <main className="container software-page">
@@ -30,13 +29,13 @@ export default async function SoftwarePage() {
               )}
               <div className="card-actions">
                 <a
-                  href={file.downloadLink}
+                  href={file.blob_url}
                   className="download-btn"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  download
                 >
-                  ↓ Download
+                  ↓ Instant Download
                 </a>
+
               </div>
             </div>
           ))

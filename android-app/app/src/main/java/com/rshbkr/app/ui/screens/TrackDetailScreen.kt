@@ -37,14 +37,34 @@ fun TrackDetailScreen(
     val exoPlayer = remember {
         androidx.media3.exoplayer.ExoPlayer.Builder(context).build()
     }
+
+    // Playback state observation
+    var isPlaying by remember { mutableStateOf(false) }
+    
+    androidx.compose.runtime.DisposableEffect(exoPlayer) {
+        val listener = object : androidx.media3.common.Player.Listener {
+            override fun onIsPlayingChanged(playing: Boolean) {
+                isPlaying = playing
+            }
+        }
+        exoPlayer.addListener(listener)
+        onDispose {
+            exoPlayer.removeListener(listener)
+        }
+    }
     
     // Load track when available
     androidx.compose.runtime.LaunchedEffect(track) {
         track?.fileUrl?.let { url ->
-            val mediaItem = androidx.media3.common.MediaItem.fromUri(url)
+            val mediaItem = androidx.media3.common.MediaItem.Builder()
+                .setUri(url)
+                .setMimeType(androidx.media3.common.MimeTypes.AUDIO_MPEG)
+                .build()
             exoPlayer.setMediaItem(mediaItem)
             exoPlayer.prepare()
-            exoPlayer.play()
+            // Auto-play on entry? User said "onclick", so 
+            // usually you'd play when click happens, but if they are 
+            // already in detail, prepare it.
         }
     }
     
@@ -83,14 +103,21 @@ fun TrackDetailScreen(
             Spacer(modifier = Modifier.height(32.dp))
             
             // Audio Controls (Simple Play/Pause for now)
-            // In a real app, we'd observe isPlaying state
             Button(
                 onClick = {
-                    if (exoPlayer.isPlaying) exoPlayer.pause() else exoPlayer.play()
+                    if (exoPlayer.isPlaying) {
+                        exoPlayer.pause()
+                    } else {
+                        // Ensure it's prepared and play
+                        if (exoPlayer.playbackState == androidx.media3.common.Player.STATE_IDLE) {
+                            exoPlayer.prepare()
+                        }
+                        exoPlayer.play()
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Play / Pause Audio")
+                Text(text = if (isPlaying) "Pause Audio" else "Play Audio")
             }
             
             Spacer(modifier = Modifier.height(32.dp))
