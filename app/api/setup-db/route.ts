@@ -41,6 +41,22 @@ export async function GET() {
       )
     `);
 
+    // 4. Create About Content table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS about_content (
+        id TEXT PRIMARY KEY DEFAULT 'main',
+        content TEXT NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Initialize about content if not exists
+    await pool.query(`
+      INSERT INTO about_content (id, content)
+      VALUES ('main', 'RSHBKR is an underground artist and developer.')
+      ON CONFLICT (id) DO NOTHING
+    `);
+
     return NextResponse.json({ message: 'Database tables initialized successfully' });
   } catch (error) {
     console.error('Database setup failed:', error);

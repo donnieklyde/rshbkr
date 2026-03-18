@@ -1,28 +1,12 @@
 
-import { getFileContent, getFolderFiles } from "@/app/lib/drive";
+import { getAboutContent } from "@/app/lib/db";
 
 export const metadata = {
   title: 'About Me',
 };
 
 export default async function AboutPage() {
-  const folderId = '1p5bpV5GxXCz3ZeVA3-6G1rpgRV6zZ5gl';
-  console.log('AboutPage: Fetching bio text from folder', folderId);
-  const files = await getFolderFiles(folderId).catch(err => {
-    console.error('AboutPage: Failed to get files', err);
-    return [];
-  });
-
-  const textFile = files.find(f => f.name.toLowerCase().includes('about me') && f.type === 'text');
-
-  let textContent = 'RSHBKR is an underground artist and developer.';
-  if (textFile) {
-    try {
-      textContent = await getFileContent(textFile.id) || textContent;
-    } catch (err) {
-      console.error('AboutPage: Failed to get file content', err);
-    }
-  }
+  const textContent = await getAboutContent();
 
   return (
     <main className="container about-page">

@@ -1,8 +1,8 @@
 
 import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 
-export async function POST(request: Request): Promise<NextResponse> {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   const body = (await request.json()) as HandleUploadBody;
 
   try {
@@ -10,7 +10,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       body,
       request,
       onBeforeGenerateToken: async (pathname) => {
-        const password = request.headers.get('cookie')?.split(';').find(c => c.trim().startsWith('admin_session='))?.split('=')[1];
+        const password = request.cookies.get('admin_session')?.value;
         if (password !== process.env.ADMIN_PASSWORD) {
           throw new Error('Unauthorized');
         }

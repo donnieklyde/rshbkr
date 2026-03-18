@@ -1,18 +1,35 @@
 
 import { Pool } from 'pg';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,
   ssl: { rejectUnauthorized: false }
 });
 
-export async function POST(request: Request) {
+
+export async function GET(request: NextRequest) {
+  try {
+    // Check auth
+    const sessionCookie = request.cookies.get('admin_session')?.value;
+    if (sessionCookie !== process.env.ADMIN_PASSWORD) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const software = await pool.query('SELECT * FROM software ORDER BY created_at DESC');
+    return NextResponse.json(software.rows);
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: 'Failed to fetch software' }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
   try {
     const { name, description, blobUrl } = await request.json();
 
     // Check auth
-    const sessionCookie = request.headers.get('cookie')?.split(';').find(c => c.trim().startsWith('admin_session='))?.split('=')[1];
+    const sessionCookie = request.cookies.get('admin_session')?.value;
     if (sessionCookie !== process.env.ADMIN_PASSWORD) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -28,5 +45,28 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: 'Database update failed' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { id } = await request.json();
+
+    // Check auth
+    const sessionCookie = request.cookies.get('admin_session')?.value;
+    if (sessionCookie !== process.env.ADMIN_PASSWORD) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!id) {
+      return NextResponse.json({ error: 'Missing software ID' }, { status: 400 });
+    }
+
+    await pool.query('DELETE FROM software WHERE id = $1', [id]);
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: 'Failed to delete software' }, { status: 500 });
   }
 }

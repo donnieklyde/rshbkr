@@ -58,11 +58,22 @@ export async function getSongs(playlistId?: string) {
   }
 }
 
+
 export async function getSoftware() {
   try {
     return await query<Software>('SELECT * FROM software ORDER BY created_at ASC');
   } catch (err) {
     console.error('Error fetching software:', err);
     throw err;
+  }
+}
+
+export async function getAboutContent() {
+  try {
+    const rows = await query<{ content: string }>('SELECT content FROM about_content WHERE id = \'main\'');
+    return rows[0]?.content || 'RSHBKR is an underground artist and developer.';
+  } catch (err) {
+    console.error('Error fetching about content:', err);
+    return 'RSHBKR is an underground artist and developer.';
   }
 }
